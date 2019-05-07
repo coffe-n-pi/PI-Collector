@@ -20,9 +20,9 @@ dev = Device(arg_cfg)
 while True:
   try:
     response = requests.post(test_url, data=capper.GetImage().tostring(), headers=headers)
+    dev.Publish(response.json())
     # decode response
     print(response.text)
   except:
     print("Server at " + test_url + " is not available!")
     time.sleep(4)
-  dev.Publish(response.json())
