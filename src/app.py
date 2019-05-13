@@ -5,22 +5,33 @@ from Capper import Capper
 from IBM_Device import Device
 import wiotp.sdk.device
 
-addr = 'http://130.229.181.193:5000'
+addr = 'http://130.237.20.126:9003'
 test_url = addr + '/api/analyse'
 
 capper = Capper()
 
 content_type = 'image/jpeg'
-headers = {'content-type': content_type}
-
+auth_token = "1QPbwyJeFdi/cpdxHCUGEHKE+uhCIuVJVCdXwc9Nmq8="
+headers = {
+  'content-type': content_type,
+  'Authorization': 'Bearer ' + auth_token
+}
 
 arg_cfg = "device.yaml"
-dev = Device(arg_cfg)
-# Disconnect the device and application from the cloud
+iot_platform = True
+try:
+  dev = Device(arg_cfg)
+except:
+  print("Can not connect to IoT cloud platform.")
+  iot_platform = False
+
 while True:
   try:
     response = requests.post(test_url, data=capper.GetImage().tostring(), headers=headers)
-    dev.Publish(response.json())
+    if response.status_code == 200 and iot_platform:
+      dev.Publish(response.json())
+    else:
+      time.sleep(4)
     # decode response
     print(response.text)
   except:
