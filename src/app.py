@@ -1,4 +1,5 @@
 import requests
+import sys
 import json
 import time
 from Capper import Capper
@@ -28,16 +29,17 @@ except:
 while True:
   try:
     response = requests.post(test_url, data=capper.GetImage().tostring(), headers=headers)
-    if response.status_code == 200 and iot_platform:
-      try:
-        if ("person" in response.json().keys()):
-          dev.Publish(response.json())
-      except:
-        iot_platform = False
+    if response.status_code == 200:
+      if iot_platform:
+        try:
+          if ("person" in response.json().keys()):
+            dev.Publish(response.json())
+        except:
+          iot_platform = False
+      print(response.text)
     else:
       time.sleep(4)
-    # decode response
-    print(response.text)
   except:
     print("Server at " + test_url + " is not available!")
     time.sleep(4)
+  sys.stdout.flush()
