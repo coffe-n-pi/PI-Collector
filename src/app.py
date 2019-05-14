@@ -29,7 +29,11 @@ while True:
   try:
     response = requests.post(test_url, data=capper.GetImage().tostring(), headers=headers)
     if response.status_code == 200 and iot_platform:
-      dev.Publish(response.json())
+      try:
+        if ("person" in response.json().keys()):
+          dev.Publish(response.json())
+      except:
+        iot_platform = False
     else:
       time.sleep(4)
     # decode response
